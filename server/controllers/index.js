@@ -10,7 +10,7 @@ const { Dog } = models;
 const hostIndex = async (req, res) => {
   // Start with the name as unknown
   let name = 'unknown';
-
+  let dname = 'unknown';
   try {
     /* Cat.findOne() will find a cat that matches the query given to it as the first parameter.
        In this case, we give it an empty object so it will match against any object it finds.
@@ -34,11 +34,27 @@ const hostIndex = async (req, res) => {
     console.log(err);
   }
 
+  try {
+  const dDoc = await Dog.findOne({}, {}, {
+      sort: { createdDate: 'descending' },
+    }).lean().exec();
+
+    // If we did get a cat back, store it's name in the name variable.
+    if (dDoc) {
+      dname = dDoc.name;
+    }
+  } catch (err) {
+    // Just log out the error for our records.
+    console.log(err);
+  }
+
+
   /* res.render will render the given view from the views folder. In this case, index.
-     We pass it a number of variables to populate the page.
+    We pass it a number of variables to populate the page.
   */
   res.render('index', {
     currentName: name,
+    currentDName: dname,
     title: 'Home',
     pageName: 'Home Page',
   });
